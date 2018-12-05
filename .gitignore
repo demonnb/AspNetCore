@@ -1,0 +1,10 @@
+# directories
+**/bin/
+**/obj/
+**/out/
+**/azureKeyVault.json
+
+# files
+Dockerfile*
+**/*.trx
+**/*.md

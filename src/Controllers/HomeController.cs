@@ -5,11 +5,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AspCoreMVC.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace AspCoreMVC.Controllers
 {
     public class HomeController : Controller
     {
+        public HomeController(IConfiguration Configuration)
+        {
+            _configuration = Configuration;
+        }
+        private IConfiguration _configuration;
         public IActionResult Index()
         {
             return View();

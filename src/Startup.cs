@@ -17,7 +17,6 @@ namespace AspCoreMVC
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            var connectionString = Configuration["MySQLPassword"];
 
         }
 

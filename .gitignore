@@ -3,6 +3,7 @@
 **/obj/
 **/out/
 **/azureKeyVault.json
+.vscode
 
 # files
 Dockerfile*

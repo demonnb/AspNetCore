@@ -18,6 +18,7 @@ namespace AspCoreMVC.Controllers
         private IConfiguration _configuration;
         public IActionResult Index()
         {
+            var passwords = _configuration["MySQLPassword"];
             return View();
         }
 

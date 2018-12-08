@@ -7,6 +7,9 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using AspCoreMVC.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AspCoreMVC
 {
@@ -14,28 +17,51 @@ namespace AspCoreMVC
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            //CreateWebHostBuilder(args).Build().Run();
+            var host = CreateWebHostBuilder(args);
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    var context = services.GetRequiredService<MovieContext>();
+                    // requires using Microsoft.EntityFrameworkCore;
+                    context.Database.Migrate();
+                    // Requires using RazorPagesMovie.Models;
+                    SeedData.Initialize(services);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred seeding the DB.");
+                }
+            }
+
+            host.Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(ConfigConfiguration)
-                .UseStartup<Startup>();
-
-        static void ConfigConfiguration(WebHostBuilderContext webHostBuilderContext, IConfigurationBuilder configurationBuilder)
+        public static IWebHost CreateWebHostBuilder(string[] args) =>
+            WebHost
+            .CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((context, configurationBuilder) =>
             {
                 configurationBuilder.SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("azureKeyVault.json", false, true)
                     .AddEnvironmentVariables();
-
+                
                 var config = configurationBuilder.Build();
-
+                
                 configurationBuilder.AddAzureKeyVault(
                     $"https://{config["vault"]}.vault.azure.net/",
                     config["clientId"],
                     config["clientSecret"]
                 );
-            }
 
+                //context.Configuration = configurationBuilder.Build();
+            })
+            .UseStartup<Startup>()
+            .Build();
     }
 }

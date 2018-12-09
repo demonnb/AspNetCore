@@ -58,8 +58,6 @@ namespace AspCoreMVC
                     config["clientId"],
                     config["clientSecret"]
                 );
-
-                //context.Configuration = configurationBuilder.Build();
             })
             .UseStartup<Startup>()
             .Build();
